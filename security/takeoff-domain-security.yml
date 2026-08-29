@@ -1,0 +1,72 @@
+generated: '2026-08-29'
+method: probed
+source: live DNS/TLS/HTTP probes of takeoff.com and its subdomains, 2026-08-29
+description: >-
+  Domain security posture for Takeoff Technologies. The registrable domain is
+  well maintained at the DNS layer — it is DNSSEC-signed with a DS record in the
+  parent zone and publishes both SPF and DMARC — but the web tier has decayed:
+  the marketing host www.takeoff.com has no TLS certificate at all, and
+  status.takeoff.com presents a certificate that does not match its hostname.
+  Only the API gateway api.takeoff.com holds a current certificate.
+hosts:
+  - host: api.takeoff.com
+    https: true
+    http_version: 2
+    tls_verified: true
+    cert_subject: CN=api.takeoff.com
+    cert_issuer: 'C=US, O=Google Trust Services, CN=WR3'
+    cert_not_before: Jul 16 12:02:49 2026 GMT
+    cert_expires: Oct 14 12:56:22 2026 GMT
+    hsts: false
+    note: >-
+      Certificate was reissued 2026-07-16, six weeks before this probe — the API
+      tier is actively maintained even though the company's marketing site is not.
+  - host: www.takeoff.com
+    https: false
+    error: tls-handshake-failed
+    detail: >-
+      openssl s_client reports "no peer certificate available" and SSL alert
+      number 80 (internal error) against 18.211.166.153; the hostname is a CNAME
+      to proxy-ssl.webflow.com / proxy-ssl-geo-2.webflow.com, so the Webflow SSL
+      certificate for this custom domain is no longer provisioned. HTTP on port
+      80 answers 301 to the same unreachable https URL, leaving no reachable
+      web presence.
+    hsts: null
+  - host: takeoff.com
+    https: false
+    error: tls-handshake-failed
+    http_redirect: 'HTTP/1.1 301 -> https://www.takeoff.com/ (X-Cluster-Name: us-east-1-prod-hosting-red)'
+    hsts: null
+  - host: status.takeoff.com
+    https: false
+    error: tls-certificate-name-mismatch
+    detail: >-
+      CNAME to qth8l8vxd7y4.stspg-customer.com (Atlassian Statuspage); the
+      presented certificate carries no SAN for status.takeoff.com.
+    hsts: null
+domains:
+  - domain: takeoff.com
+    dnssec: true
+    dnskey_present: true
+    ds_present: true
+    ds: 13589 8 2 78FC2F68353D880A0302900BAC971A0C5B21300E7340E49852C8CE1A5D1A0BDA
+    caa: []
+    caa_present: false
+    spf: true
+    spf_record: >-
+      v=spf1 a mx include:_spf.google.com include:mail.zendesk.com
+      include:sendgrid.net include:stspg-customer.com ip4:168.245.1.42
+      ip4:149.72.173.189 ip4:149.72.195.148 include:mail.zohopayroll.in ~all
+    dmarc: true
+    dmarc_policy: none
+    dmarc_record: 'v=DMARC1; p=none; rua=mailto:dmarc-reports@takeoff.com'
+    nameservers:
+      - ns-cloud-b1.googledomains.com
+      - ns-cloud-b2.googledomains.com
+      - ns-cloud-b3.googledomains.com
+      - ns-cloud-b4.googledomains.com
+    mx: Google Workspace (aspmx.l.google.com)
+findings:
+  - No CAA record is published, so any public CA may issue for takeoff.com.
+  - DMARC is published at p=none (monitor only), so spoofed mail is reported but not rejected.
+  - HSTS is not set on the one host that completes a TLS handshake.

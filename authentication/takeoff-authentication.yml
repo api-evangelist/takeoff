@@ -1,0 +1,125 @@
+generated: '2026-08-29'
+method: probed
+source: https://api.takeoff.com/ — unauthenticated HTTP probes, 2026-08-29
+description: >-
+  Takeoff Technologies publishes no developer portal, no API reference and no
+  machine-readable contract anywhere on the public web, but api.takeoff.com is a
+  live, actively-maintained API gateway. This profile is what could be
+  established about its authentication model from OUTSIDE the wall, by
+  unauthenticated probing only. It is NOT derived from a provider-published
+  specification, and nothing here should be read as documentation Takeoff
+  publishes — no `Authentication` pointer is wired into apis.yml for exactly
+  that reason.
+host: https://api.takeoff.com
+gateway:
+  platform: Google Cloud (via 1.1 google, HTTP/2, alt-svc h3)
+  certificate_issuer: Google Trust Services WR3
+  certificate_reissued: '2026-07-16'
+  default_response: HTTP 404 with a zero-length body for any unrouted path
+  request_correlation: >-
+    Every routed response carries an `x-request-id` header holding a UUIDv4 —
+    a real request-tracing convention, observable without credentials.
+observed_schemes:
+  - scheme: unknown-header
+    evidence: >-
+      HTTP 401 application/json {"code":"401", "message":"Missing authentication
+      header."} on every path under /auth/ and /sites/. The gateway names the
+      requirement ("authentication header") but does not name the header, the
+      scheme, or a token endpoint, and returns no WWW-Authenticate header.
+    www_authenticate: null
+    note: >-
+      No OAuth metadata is served: /.well-known/oauth-authorization-server,
+      /.well-known/oauth-protected-resource and /.well-known/openid-configuration
+      all 404 on this host, and /oauth, /oauth2, /token and /sso are unrouted.
+      Whether the scheme is bearer, an API key header, or mTLS cannot be
+      determined from outside.
+routes_observed:
+  - path: /auth
+    status: 401
+    body: '{"code":"401", "message":"Missing authentication header."}'
+    note: >-
+      Prefix routes — every child path probed (/auth/, /auth/login, /auth/v1,
+      /auth/health, /auth/openapi.json, /auth/api-docs, /auth/v3/api-docs,
+      /auth/swagger-ui.html, /auth/actuator/health) returns the same 401, so no
+      spec or health endpoint is reachable unauthenticated.
+  - path: /auth/token
+    status: 404
+    body: '{"code":"404", "message":"Path not found : /auth/token"}'
+    note: >-
+      A DIFFERENT 404 shape from the gateway default — a JSON body naming the
+      path. This proves routing exists inside /auth and that the 404 is issued
+      by the service, not by the load balancer.
+  - path: /sites
+    status: 401
+    body: '{"code":"401", "message":"Missing authentication header."}'
+  - path: /webhooks
+    status: 403
+    body: '{"message":"Forbidden", "path": ""}'
+    note: >-
+      A webhook surface exists behind the gateway. It is NOT publicly
+      documented, so no `Webhooks` pointer is wired.
+  - path: /identity
+    status: 403
+    body: '{"message":"Forbidden", "path": ""}'
+unrouted_probed:
+  note: >-
+    All of these returned the gateway default (404, zero-length body), i.e. no
+    such route is published at the edge.
+  paths:
+    - /
+    - /v1
+    - /v2
+    - /v3
+    - /api
+    - /api/v1
+    - /docs
+    - /developer
+    - /graphql
+    - /mcp
+    - /openapi.json
+    - /openapi.yaml
+    - /swagger.json
+    - /api-docs
+    - /swagger-ui
+    - /health
+    - /healthz
+    - /status
+    - /ping
+    - /version
+    - /metrics
+    - /login
+    - /oauth
+    - /oauth2
+    - /token
+    - /sso
+    - /orders
+    - /inventory
+    - /catalog
+    - /users
+    - /products
+    - /items
+    - /picking
+    - /fulfillment
+    - /stores
+    - /wms
+    - /oms
+    - /events
+    - /admin
+    - /gateway
+    - /public
+    - /partner
+    - /integrations
+    - /reports
+    - /analytics
+    - /notifications
+    - /config
+    - /tenants
+    - /accounts
+    - /devices
+    - /telemetry
+    - /mfc
+limits:
+  - No credentials were used and none were sought; nothing behind the wall was accessed.
+  - >-
+    The header name, token format, scope model, expiry and refresh behaviour are
+    all unknown and are deliberately left unrecorded rather than guessed.

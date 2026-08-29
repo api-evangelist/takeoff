@@ -1,0 +1,69 @@
+generated: '2026-08-29'
+method: probed
+source: live HTTPS probes of every Takeoff host reachable on 2026-08-29
+description: >-
+  Results of probing the /.well-known/ discovery surface for the Takeoff
+  Technologies hosts. api.takeoff.com is a live Google Cloud API gateway
+  (valid Google Trust Services certificate, renewed 2026-07-16) that answers
+  404 with an empty body for every /.well-known/ path. www.takeoff.com — the
+  company marketing site, which the apex 301-redirects to — no longer has a
+  TLS certificate provisioned at its Webflow origin, so the handshake fails
+  with "tlsv1 alert internal error" before any HTTP request can be made; those
+  paths are recorded as unreachable, not as 404s. status.takeoff.com resolves
+  to Atlassian Statuspage but presents a certificate that does not match the
+  hostname, so it is unreachable too. NO /.well-known/ document was served by
+  any host, so no WellKnown or SecurityTxt pointer is wired into apis.yml —
+  this file records an absence, not a presence.
+hosts:
+  - host: https://api.takeoff.com
+    note: >-
+      Live API gateway. Root and all /.well-known/ paths answer HTTP 404 with a
+      zero-length body (the Google Cloud load balancer default), while the
+      service prefixes /auth, /sites, /webhooks and /identity answer structured
+      401/403 JSON — see authentication/takeoff-authentication.yml.
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: https://www.takeoff.com
+    note: >-
+      Unreachable. No TLS certificate is provisioned for this hostname at the
+      Webflow origin (proxy-ssl.webflow.com); openssl reports "no peer
+      certificate available" and every client aborts with SSL alert 80. No HTTP
+      status can be observed, so status is recorded as null.
+    documents:
+      - path: /.well-known/security.txt
+        status: null
+        error: tls-handshake-failed
+      - path: /.well-known/agent-card.json
+        status: null
+        error: tls-handshake-failed
+      - path: /.well-known/agent.json
+        status: null
+        error: tls-handshake-failed
+  - host: https://status.takeoff.com
+    note: >-
+      Unreachable. Resolves to Atlassian Statuspage (qth8l8vxd7y4.stspg-customer.com)
+      but the presented certificate has no subject alternative name matching
+      status.takeoff.com, so the connection is refused by every verifying client.
+    documents:
+      - path: /
+        status: null
+        error: tls-certificate-name-mismatch
+summary:
+  documents_served: 0
+  hosts_probed: 3
+  hosts_reachable: 1

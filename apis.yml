@@ -1,7 +1,22 @@
 aid: takeoff
 name: TakeOff
-description: 'TakeOff is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Takeoff Technologies, Inc. is an eGrocery micro-fulfillment company founded in
+  2016 and headquartered in Waltham, Massachusetts. It paired KNAPP-built robotic
+  storage-and-retrieval hardware with its own cloud software stack — order
+  management, inventory, pick routing, labor management, and delivery
+  orchestration — into micro-fulfillment centers (MFCs) installed inside or beside
+  existing supermarkets, so grocers could assemble online orders in minutes
+  instead of sending shoppers down the aisles. Customers and partners included
+  Albertsons, Wakefern Food Corp., Woolworths Group and Chilean grocer SMU. The
+  company filed for Chapter 11 in May 2024 and Woolworths Group acquired its
+  micro-fulfillment assets in August 2024. Takeoff never published a public
+  developer program: there is no developer portal, API reference, SDK or
+  machine-readable specification anywhere on its public surface, and the marketing
+  site at www.takeoff.com no longer serves TLS. A closed API gateway at
+  api.takeoff.com remains live and actively certificate-maintained, serving
+  customer integrations behind authentication.
+image: https://avatars.githubusercontent.com/u/32682326?s=200&v=4
 url: https://raw.githubusercontent.com/api-evangelist/takeoff/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
@@ -12,6 +27,15 @@ created: '2026-08-29'
 modified: '2026-08-29'
 tags:
 - Company
+- Grocery
+- Retail
+- eCommerce
+- Fulfillment
+- Micro-Fulfillment
+- Warehouse Automation
+- Robotics
+- Supply Chain
+- Logistics
 apis: []
 maintainers:
 - FN: Kin Lane
@@ -19,5 +43,46 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
-- type: Website
-  url: https://forgeglobal.com/takeoff_stock/
+- type: GitHubOrganization
+  url: https://github.com/TakeoffTech
+- type: LLMsTxt
+  url: llms/takeoff-llms.txt
+- type: DomainSecurity
+  url: security/takeoff-domain-security.yml
+x-enrichment:
+  date: '2026-08-29'
+  status: minimal
+  artifacts_added: 4
+  pass: local-v1
+x-coverage:
+  state: gated
+  reason: customer-only-docs
+  detail: >-
+    Takeoff's API is real and live but has no public face at all: api.takeoff.com
+    holds a Google Trust Services certificate reissued 2026-07-16 and answers
+    {"code":"401", "message":"Missing authentication header."} on /auth and
+    /sites and {"message":"Forbidden"} on /webhooks and /identity, yet it names
+    no header, serves no OAuth metadata and 404s every spec path, while the
+    company's own marketing site www.takeoff.com has had no TLS certificate
+    provisioned at its Webflow origin since the 2024 Chapter 11 and Woolworths
+    asset sale — so integration docs exist only for deployed grocer tenants.
+  evidence:
+  - url: https://api.takeoff.com/auth
+    status: 401
+  - url: https://api.takeoff.com/webhooks
+    status: 403
+  - url: https://api.takeoff.com/openapi.json
+    status: 404
+  - url: https://api.takeoff.com/.well-known/agent-card.json
+    status: 404
+  - url: https://api.takeoff.com/llms.txt
+    status: 404
+  - url: https://www.takeoff.com/
+    status: 0
+  - url: https://status.takeoff.com/
+    status: 0
+  - url: https://github.com/TakeoffTech
+    status: 200
+  - url: https://forgeglobal.com/takeoff_stock/
+    status: 403
+  checked: '2026-08-29'

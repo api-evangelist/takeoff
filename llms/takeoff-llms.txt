@@ -1,0 +1,53 @@
+# Takeoff Technologies
+
+> Takeoff Technologies, Inc. is an eGrocery micro-fulfillment company founded in
+> 2016 and headquartered in Waltham, Massachusetts. It combined KNAPP-built
+> robotic storage and retrieval hardware with its own cloud software — order
+> management, inventory, pick routing, labor and delivery orchestration — into
+> micro-fulfillment centers (MFCs) installed inside or beside existing grocery
+> stores, for customers including Albertsons, Wakefern, Woolworths Group and
+> Chilean grocer SMU. The company filed for Chapter 11 in May 2024; Woolworths
+> Group acquired its micro-fulfillment assets in August 2024.
+
+## Status of this profile
+
+- Takeoff has never published a public developer portal, API reference, SDK,
+  Postman collection or machine-readable specification. No OpenAPI, AsyncAPI,
+  GraphQL SDL, MCP server or A2A agent card was found on any Takeoff host.
+- The company marketing site at https://www.takeoff.com/ no longer serves TLS:
+  its Webflow origin has no certificate provisioned for the hostname, and the
+  apex 301-redirects to it, so there is no reachable web presence. The last
+  Internet Archive capture is 2024-09-24.
+- An API DOES exist. https://api.takeoff.com is a live Google Cloud gateway with
+  a certificate reissued 2026-07-16. It is entirely closed: /auth and /sites
+  return `{"code":"401", "message":"Missing authentication header."}`, /webhooks
+  and /identity return `{"message":"Forbidden", "path": ""}`, and every other
+  path returns an empty 404. It is a customer-integration surface, not a public
+  product.
+- The GitHub organization https://github.com/TakeoffTech is public and still
+  active (last push 2026-08-25). Its eleven repositories are internal
+  engineering tooling — Clojure libraries (clj-camel, jeesql, sonar-clojure),
+  GitHub Actions, Terraform for GCP, a Kubernetes Postgres operator. None of
+  them is a client SDK and none contains an API specification.
+
+## What an agent should do with this
+
+- Do not attempt to call api.takeoff.com. There is no public credential path, no
+  documented authentication header, and no self-service sign-up.
+- Integration with Takeoff is arranged commercially, per grocer deployment.
+  Route such requests to a human rather than to an endpoint.
+
+## Links
+
+- GitHub organization: https://github.com/TakeoffTech
+- Secondary-market listing (Forge Global): https://forgeglobal.com/takeoff_stock/
+- API host (gated, no public documentation): https://api.takeoff.com
+
+## Provenance
+
+- Generated 2026-08-29 by the API Evangelist enrichment pipeline from apis.yml
+  and this repository's probe artifacts. No /llms.txt is published by Takeoff:
+  https://api.takeoff.com/llms.txt returns 404 and https://www.takeoff.com/llms.txt
+  cannot be reached.
+- Probe evidence: well-known/takeoff-well-known.yml,
+  security/takeoff-domain-security.yml, authentication/takeoff-authentication.yml
