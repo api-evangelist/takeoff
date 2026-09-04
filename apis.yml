@@ -16,6 +16,19 @@ description: >-
   site at www.takeoff.com no longer serves TLS. A closed API gateway at
   api.takeoff.com remains live and actively certificate-maintained, serving
   customer integrations behind authentication.
+accessModel:
+  pricing: unknown
+  onboarding: open
+  trial: false
+  try_now: false
+  public: true
+  label: Open access
+  confidence: low
+  source:
+  - authentication
+  - security
+  generated: '2026-09-02'
+  method: derived
 image: https://avatars.githubusercontent.com/u/32682326?s=200&v=4
 url: https://raw.githubusercontent.com/api-evangelist/takeoff/refs/heads/main/apis.yml
 x-type: company
